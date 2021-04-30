@@ -1,15 +1,48 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 public class solution30Apr21 {
     public static void main(String[] args) {
         ArrayList<Integer> l = new ArrayList<>(Arrays.asList(756898537, -1973594324, -2038664370, -184803526, 1424268980 ));
-        System.out.println(MaxNonNegativeSubArray(l));
+        //System.out.println(MaxNonNegativeSubArray(l));
         int num=6;
         Integer.toHexString(num);
+        //System.out.println(isSubsequence("abc","ahbgdc"));
+        System.out.println(longestPalindrome("civilwartestingwhetherthatnaptionoranynartionsoconceivedandsodedicatedcanlongendureWeareqmetonagreatbattlefiemldoftzhatwarWehavecometodedicpateaportionofthatfieldasafinalrestingplaceforthosewhoheregavetheirlivesthatthatnationmightliveItisaltogetherfangandproperthatweshoulddothisButinalargersensewecannotdedicatewecannotconsecratewecannothallowthisgroundThebravelmenlivinganddeadwhostruggledherehaveconsecrateditfaraboveourpoorponwertoaddordetractTgheworldadswfilllittlenotlenorlongrememberwhatwesayherebutitcanneverforgetwhattheydidhereItisforusthelivingrathertobededicatedheretotheulnfinishedworkwhichtheywhofoughtherehavethusfarsonoblyadvancedItisratherforustobeherededicatedtothegreattdafskremainingbeforeusthatfromthesehonoreddeadwetakeincreaseddevotiontothatcauseforwhichtheygavethelastpfullmeasureofdevotionthatweherehighlyresolvethatthesedeadshallnothavediedinvainthatthisnationunsderGodshallhaveanewbirthoffreedomandthatgovernmentofthepeoplebythepeopleforthepeopleshallnotperishfromtheearth"));
     }
-
+    public static int longestPalindrome(String s) {
+        Map<Character,Integer> m = new HashMap<>();
+        for(char c:s.toCharArray()){
+            if(m.containsKey(c)){
+                m.put(c,m.get(c)+1);
+            }
+            else{
+                m.put(c,1);
+            }
+        }
+        int sum=0;
+        boolean odd=false;
+        for(int x: m.values()){
+            if(x%2==0) sum+=x;
+            if(x%2==1) {
+                odd=true;
+                sum+=x-1;
+            }
+        }
+        return sum+(odd?1:0);
+    }
+    public static boolean isSubsequence(String s, String t) {
+        int i=0;
+        int j=0;
+        if(t.length()<s.length()) return false;
+        while(i<s.length()&&j<t.length()){
+            if(s.charAt(i)==t.charAt(j)){
+                i++;
+            }
+            j++;
+        }
+        if(i==s.length()) return true;
+        return false;
+    }
     public static ArrayList<Integer> MaxNonNegativeSubArray(ArrayList<Integer> A) {
         ArrayList<Integer> maxArray = new ArrayList<>();
         long maxSum=Integer.MIN_VALUE;
