@@ -2,8 +2,11 @@ import java.util.*;
 
 public class backTrackingProblems {
     public static void main(String[] args) {
-        ArrayList<Integer> c1 = new ArrayList<>(Arrays.asList(0, 1));
-        ArrayList<Integer> c2 = new ArrayList<>(Arrays.asList(2, 0  ));
+        ArrayList<Integer> c1 = new ArrayList<>(Arrays.asList(6,7));
+        ArrayList<Integer> c2 = new ArrayList<>(Arrays.asList(3,9  ));
+        ArrayList<Integer> c3 = new ArrayList<>(Arrays.asList(2,5  ));
+        ArrayList<Integer> c4 = new ArrayList<>(Arrays.asList(1,4  ));
+        ArrayList<Integer> c5 = new ArrayList<>(Arrays.asList(8,10  ));
         //ArrayList<Integer> c3 = new ArrayList<>(Arrays.asList(0, 0, 2, -1));
 //        ArrayList<Integer> c4 = new ArrayList<>(Arrays.asList(0, 0, 3, 0, 1, 0, 0, 8, 0));
 //        ArrayList<Integer> c5 = new ArrayList<>(Arrays.asList( 9, 0, 0, 8, 6, 3, 0, 0, 5));
@@ -12,18 +15,143 @@ public class backTrackingProblems {
 //        ArrayList<Integer> c8 = new ArrayList<>(Arrays.asList( 0, 0, 0, 0, 0, 0, 0, 7, 4 ));
 //        ArrayList<Integer> c9 = new ArrayList<>(Arrays.asList(0, 0, 5, 2, 0, 6, 3, 0, 0 ));
         ArrayList<ArrayList<Integer>> board = new ArrayList<>();
-        board.add(c1);board.add(c2);//board.add(c3);//board.add(c4);board.add(c5);board.add(c6);board.add(c7);board.add(c8);board.add(c9);
+        board.add(c1);board.add(c2);board.add(c3);board.add(c4);board.add(c5);//board.add(c6);board.add(c7);board.add(c8);board.add(c9);
         //solveSudoku(board);
         //System.out.println(generateParenthesis(4));
         //System.out.println(isPalindrome("aa"));
         //System.out.println(partition("abcbad"));
-        ArrayList<Integer> list = new ArrayList<>(Arrays.asList(2, 3, 6, 7));
-        int[] arr= {1,2,3};
+        ArrayList<Integer> list = new ArrayList<>(Arrays.asList(10, 1, 7, 4, 6, 2, 3, 5, 8, 9));
+        int[] arr= {1,2};
         int min = Arrays.stream(arr).min().getAsInt();
         //System.out.println(combinationSum(list,7));
         //System.out.println(solveNQueens(4).size());
-        System.out.println(solveUniquePathsIII(board));
+        //System.out.println(solveUniquePathsIII(board));
+        //System.out.println(solveNumberOfSquarefulArrays(list));
+        System.out.println(solveMinimumSwapsToFormPairs(5,list,board));
     }
+    //return minimum swaps
+    public static int solveMinimumSwapsToFormPairs(int A, ArrayList<Integer> B, ArrayList<ArrayList<Integer>> C) {
+        //to store indices of array elements
+        int[] indexes= new int[A*2+1];
+        //store index of each element in array index
+        for (int i = 0; i <B.size() ; i++) {
+            indexes[B.get(i)]=i;
+        }
+        //Arraylist of pairs
+        int[] pairs = new int[2*A+1];
+        for (ArrayList<Integer> list : C) {
+            int x = list.get(0), y = list.get(1);
+            pairs[x] = y;
+            pairs[y] = x;
+        }
+        //create array
+        int[] array = new int[2*A+1];
+        int i=1;
+        for (int x : B){
+            array[i]=x;
+            i++;
+        }
+        //call recursive function
+        return minSwapsUtil(indexes,array,pairs,1,2*A);
+    }
+    private static int minSwapsUtil(int[] indexes, int[] array, int[] pairs, int i, int n) {
+        //all pairs processed
+        if (i>n) return 0;
+        //if current pair is valid, skip and process others
+        if (pairs[array[i]]==array[i+1]){
+            return minSwapsUtil(indexes,array,pairs,i+2,n);
+        }
+        //current pair is not valid
+        //swap pair of array(i) and array(i+1)
+        //recursively compute minimum
+        int one = array[i + 1];
+        int indexTwo = i + 1;
+        int indexOne = indexes[pairs[array[i]]];
+        int two = array[indexes[pairs[array[i]]]];
+        //array[i+1] ^= two ^ 1 ;
+        array[i+1] =array[i + 1] ^ array[indexOne] ^  (array[indexOne] = array[i + 1]);
+        swapIndex(indexes,one,indexOne,two,indexTwo);
+        //count swaps if this move is made
+        int a = minSwapsUtil(indexes,array,pairs,i+2,n);
+        //backtrack to previous config, revert earlier swap
+        array[i+1] =array[i + 1] ^ array[indexOne] ^  (array[indexOne] = array[i + 1]);
+        swapIndex(indexes,one,indexTwo,two,indexOne);
+        //swap pair of array(i) and array(i+1) (reverse of earlier)
+        //recursively compute minimum
+        one = array[i];
+        indexOne = indexes[pairs[array[i + 1]]];
+        two = array[indexes[pairs[array[i + 1]]]];
+        indexTwo = i;
+        array[i] = array[i] ^ array[indexOne] ^ (array[indexOne]=array[i]);
+        swapIndex(indexes,one,indexOne,two,indexTwo);
+        //count swaps for the earlier swap is reversed
+        int b= minSwapsUtil(indexes,array,pairs,i+2,n);
+        //backtrack to previous config, revert earlier swap
+        array[i] = array[i] ^ array[indexOne] ^ (array[indexOne]=array[i]);
+        swapIndex(indexes,one,indexTwo,two,indexOne);
+        // return min of two cases
+        return 1+Math.min(a,b);
+    }
+    private static void swapIndex(int[] indexes, int a, int ai, int b, int bi) {
+        indexes[a] =ai;
+        indexes[b]= bi;
+    }
+
+
+    static int squareCount;
+    public static int solveNumberOfSquarefulArrays(ArrayList<Integer> A) {
+        if (A.size()==1){
+            return isSquare(A.get(0),0) ? 1 : 0;
+        }
+        squareCount=0;
+        Collections.sort(A);
+        helperSquarefulArray(new ArrayList<Integer>(),A,new boolean[A.size()],-1);
+        return squareCount;
+    }
+    private static boolean isSquare(Integer integer, int lastNumber) {
+        double sqrt = Math.sqrt(integer+lastNumber);
+        return (sqrt-Math.floor(sqrt))==0;
+    }
+    private static void helperSquarefulArray(ArrayList<Integer> temp, ArrayList<Integer> A, boolean[] used, int lastNumber) {
+        if (temp.size()==A.size()){
+            squareCount++;
+        }
+        else{
+            for (int i = 0; i < A.size(); i++) {
+                if (used[i] || (i>0 && A.get(i).equals(A.get(i-1)) && !used[i-1]))continue;
+                //if (used[i]) continue; at the end divide answer by count of all duplicate value
+                if (lastNumber!=-1){
+                    if (!isSquare(A.get(i),lastNumber)) continue;
+                }
+                used[i]=true;
+                temp.add(A.get(i));
+                helperSquarefulArray(temp,A,used,A.get(i));
+                temp.remove(temp.size()-1);
+                used[i]=false;
+            }
+        }
+    }
+
+    static final String mappings[]
+            = { "0","1","abc", "def", "ghi", "jkl", "mno","pqrs", "tuv", "wxyz" };
+    public static ArrayList<String> letterPhone(String input){
+        if (input.length()==0){
+            return new ArrayList<>(Collections.singleton(""));
+        }
+        char ch = input.charAt(0);
+        String rest = input.substring(1);
+        ArrayList<String> restStrings = letterPhone(rest);
+        ArrayList<String> answer = new ArrayList<>();
+        String maps = mappings[ch-'0'];
+        for (String str : restStrings){
+            for (int i = 0; i < maps.length(); i++) {
+                answer.add(maps.charAt(i)+str);
+            }
+        }
+        Collections.sort(answer);
+        return answer;
+    }
+
     static int count=0;
     public static int solveUniquePathsIII(ArrayList<ArrayList<Integer>> A) {
         int startRow = 0;
