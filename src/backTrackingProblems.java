@@ -2,9 +2,9 @@ import java.util.*;
 
 public class backTrackingProblems {
     public static void main(String[] args) {
-        ArrayList<Integer> c1 = new ArrayList<>(Arrays.asList(6,7));
-        ArrayList<Integer> c2 = new ArrayList<>(Arrays.asList(3,9  ));
-        ArrayList<Integer> c3 = new ArrayList<>(Arrays.asList(2,5  ));
+        ArrayList<Integer> c1 = new ArrayList<>(Arrays.asList(1,1,1));
+        ArrayList<Integer> c2 = new ArrayList<>(Arrays.asList(1,1,1  ));
+        ArrayList<Integer> c3 = new ArrayList<>(Arrays.asList(1,1 ,1 ));
         ArrayList<Integer> c4 = new ArrayList<>(Arrays.asList(1,4  ));
         ArrayList<Integer> c5 = new ArrayList<>(Arrays.asList(8,10  ));
         //ArrayList<Integer> c3 = new ArrayList<>(Arrays.asList(0, 0, 2, -1));
@@ -15,20 +15,201 @@ public class backTrackingProblems {
 //        ArrayList<Integer> c8 = new ArrayList<>(Arrays.asList( 0, 0, 0, 0, 0, 0, 0, 7, 4 ));
 //        ArrayList<Integer> c9 = new ArrayList<>(Arrays.asList(0, 0, 5, 2, 0, 6, 3, 0, 0 ));
         ArrayList<ArrayList<Integer>> board = new ArrayList<>();
-        board.add(c1);board.add(c2);board.add(c3);board.add(c4);board.add(c5);//board.add(c6);board.add(c7);board.add(c8);board.add(c9);
+        board.add(c1);board.add(c2);board.add(c3);//board.add(c4);board.add(c5);//board.add(c6);board.add(c7);board.add(c8);board.add(c9);
         //solveSudoku(board);
         //System.out.println(generateParenthesis(4));
         //System.out.println(isPalindrome("aa"));
         //System.out.println(partition("abcbad"));
-        ArrayList<Integer> list = new ArrayList<>(Arrays.asList(10, 1, 7, 4, 6, 2, 3, 5, 8, 9));
+        ArrayList<Integer> list = new ArrayList<>(Arrays.asList(10, 1, 2, 7, 6, 1, 5));
         int[] arr= {1,2};
         int min = Arrays.stream(arr).min().getAsInt();
         //System.out.println(combinationSum(list,7));
         //System.out.println(solveNQueens(4).size());
         //System.out.println(solveUniquePathsIII(board));
         //System.out.println(solveNumberOfSquarefulArrays(list));
-        System.out.println(solveMinimumSwapsToFormPairs(5,list,board));
+        //System.out.println(solveMinimumSwapsToFormPairs(5,list,board));
+        //System.out.println(combinationSumII(list,8));
+        ArrayList<String> dictionaries = new ArrayList<>(Arrays.asList("cat", "cats", "and", "sand", "dog"));
+        //System.out.println(wordBreakII("catsanddog",dictionaries));
+        //System.out.println(solveRemoveInvalidParentheses("))m))w"));
+        System.out.println(solveVerticalAndHorizontalSums(3,board,2));
     }
+
+    ////
+    static boolean possible;
+    static ArrayList<ArrayList<Integer>> matrix;
+    public static int solveVerticalAndHorizontalSums(int A, ArrayList<ArrayList<Integer>> B, int C) {
+        possible=false;
+        matrix=new ArrayList<>(B);
+        verticalAndHorizontalSums(A,C);
+        if (possible) return 1;
+        return 0;
+    }
+    public static void verticalAndHorizontalSums(int A, int C) {
+        int N=matrix.size();
+        int M=matrix.get(0).size();
+        for (int row = 0; row <= N; row++) {
+            for (int col = 0; col < M; col++) {
+                possible=isValidMatrix(C);
+                if(possible) return;
+                if(row==N) return;
+                int colSum=0;
+                for (ArrayList<Integer> list : matrix) {
+                    colSum += list.get(col);
+                    if (colSum > C || colSum<-100000) break;
+                }
+                int rowSum=0;
+                for (int i = 0; i < M; i++) {
+                    rowSum+=matrix.get(row).get(i);
+                    if (rowSum > C || rowSum<-100000) break;
+                }
+                if (rowSum<=C&&colSum<=C) continue;
+                if (A==0) return;
+                matrix.get(row).set(col,-1*matrix.get(row).get(col));
+                A--;
+                colSum=0;
+                for (ArrayList<Integer> list : matrix) {
+                    colSum += list.get(col);
+                    if (colSum > C || colSum<-100000) break;
+                }
+                rowSum=0;
+                for (int i = 0; i < M; i++) {
+                    rowSum+=matrix.get(row).get(i);
+                    if (rowSum > C || rowSum<-100000) break;
+                }
+                if (rowSum<=C&&colSum<=C){
+                    verticalAndHorizontalSums(A,C);
+                    if(possible) return;
+                    matrix.get(row).set(col,-1*matrix.get(row).get(col));
+                    A++;
+                }
+            }
+        }
+    }
+
+    private static boolean isValidMatrix(int sum) {
+
+        for (ArrayList<Integer> list : matrix) {
+            int rowSum = 0;
+            for (int j = 0; j < matrix.get(0).size(); j++) {
+                rowSum += list.get(j);
+                if (rowSum > sum || rowSum<-100000) return false;
+            }
+
+        }
+        for (int i = 0; i < matrix.get(0).size(); i++) {
+            int colSum=0;
+            for (ArrayList<Integer> list : matrix) {
+                colSum += list.get(i);
+                if (colSum > sum || colSum<-100000) return false;
+            }
+
+        }
+        return true;
+    }
+
+
+    //////
+    public static ArrayList<String> solveRemoveInvalidParentheses(String A) {
+        ArrayList<String> answer = new ArrayList<>();
+        Set<String> visited = new HashSet<>();
+        Queue<String> q = new LinkedList<>();
+        String temp = null;
+        boolean level =false;
+        q.add(A);
+        visited.add(A);
+        while (!q.isEmpty()){
+            A=q.peek();q.remove();
+            if (isValidParentheses(A)){
+                answer.add(A);
+                level=true;
+            }
+            if (level) continue;
+            for (int i = 0; i < A.length(); i++) {
+                if ((A.charAt(i) !='(') && (A.charAt(i) !=')')) continue;
+                temp=A.substring(0,i)+A.substring(i+1);
+                if (!visited.contains(temp)) q.add(temp);
+                visited.add(temp);
+            }
+
+        }
+        return answer;
+    }
+
+    private static boolean isValidParentheses(String s) {
+        Stack<Character> stk = new Stack<>();
+        for (char c : s.toCharArray()){
+            if(!stk.isEmpty()&&stk.peek()=='('&&c==')'){
+                stk.pop();
+            }
+            else if(c=='('||c==')')stk.push(c);
+        }
+        return stk.isEmpty();
+    }
+
+    //////////
+    static ArrayList<String> wordBreakII ;
+    public static ArrayList<String> wordBreakII(String A, ArrayList<String> B) {
+        Set<String> set = new HashSet<>(B);
+        wordBreakII = new ArrayList<>();
+        recursiveWordBreak(A,set,"",A.length());
+        return wordBreakII;
+    }
+
+    private static void recursiveWordBreak(String A,Set<String> set, String sentence,int n) {
+        for (int i = 0; i <= n; i++) {
+            String str = A.substring(0,i);
+            if(doesExist(str,set)){
+                if (i==n){
+                    sentence+=str;
+                    wordBreakII.add(sentence);
+                    return;
+                }
+                recursiveWordBreak(A.substring(i),set,sentence+str+" ",n-i);
+            }
+        }
+    }
+
+    private static boolean doesExist(String str, Set<String> set) {
+        String[] list = str.split(" ");
+        for (String s : list){
+            if(!set.contains(s)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /////////
+    static Set<ArrayList<Integer>> combinationSumSet;
+    public static ArrayList<ArrayList<Integer>> combinationSumII(ArrayList<Integer> A, int B) {
+        ArrayList<Integer> temp = new ArrayList<>();
+        combinationSumSet=new HashSet<>();
+        boolean[] used = new boolean[A.size()];
+        recursiveCombinationSum(A,temp,used,B);
+        return new ArrayList<>(combinationSumSet);
+    }
+
+    private static void recursiveCombinationSum(ArrayList<Integer> A, ArrayList<Integer> temp, boolean[] used, int sum) {
+        if (sum==0){
+            ArrayList<Integer> sumArray = new ArrayList<>(temp);
+            Collections.sort(sumArray);
+            combinationSumSet.add(sumArray);
+        }
+        else {
+            for (int i = 0; i < A.size(); i++) {
+                if (!used[i]&&A.get(i)<=sum){
+                    used[i]=true;
+                    temp.add(A.get(i));
+                    recursiveCombinationSum(A,temp,used,sum-A.get(i));
+                    temp.remove(temp.size()-1);
+                    used[i]=false;
+                }
+            }
+        }
+    }
+
     //return minimum swaps
     public static int solveMinimumSwapsToFormPairs(int A, ArrayList<Integer> B, ArrayList<ArrayList<Integer>> C) {
         //to store indices of array elements
@@ -98,6 +279,9 @@ public class backTrackingProblems {
     }
 
 
+
+
+    /////////
     static int squareCount;
     public static int solveNumberOfSquarefulArrays(ArrayList<Integer> A) {
         if (A.size()==1){
@@ -132,6 +316,9 @@ public class backTrackingProblems {
         }
     }
 
+
+
+    ///////////////
     static final String mappings[]
             = { "0","1","abc", "def", "ghi", "jkl", "mno","pqrs", "tuv", "wxyz" };
     public static ArrayList<String> letterPhone(String input){
@@ -152,6 +339,14 @@ public class backTrackingProblems {
         return answer;
     }
 
+
+
+
+
+
+
+
+    /////////////
     static int count=0;
     public static int solveUniquePathsIII(ArrayList<ArrayList<Integer>> A) {
         int startRow = 0;
@@ -244,6 +439,14 @@ public class backTrackingProblems {
         return true;
     }
 
+
+
+
+
+
+
+
+    ///////////////
     static ArrayList<ArrayList<Integer>> combinationSum;
     public static ArrayList<ArrayList<Integer>> combinationSum(ArrayList<Integer> A, int B) {
         Set<Integer> set = new HashSet<>(A);
@@ -270,6 +473,12 @@ public class backTrackingProblems {
         }
     }
 
+
+
+
+
+
+    ///////////////
     static ArrayList<ArrayList<String>> palindromeList;
     public static ArrayList<ArrayList<String>> partition(String a) {
         palindromeList= new ArrayList<>();
@@ -301,6 +510,10 @@ public class backTrackingProblems {
         if (s.length()==2) return true;
         return isPalindrome(s.substring(1,s.length()-1));
     }
+
+
+
+    //////////////////
     static ArrayList<String> parenthesis;
     public static ArrayList<String> generateParenthesis(int A) {
         parenthesis=new ArrayList<>();
@@ -322,6 +535,13 @@ public class backTrackingProblems {
         }
     }
 
+
+
+
+
+
+
+    /////////////
     public static void solveSudoku(ArrayList<ArrayList<Integer>>  board) {
         if(board == null || board.size() == 0)
             return;
