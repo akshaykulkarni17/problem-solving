@@ -11,7 +11,23 @@ public class twoPointers {
         //System.out.println(countSubArrays(list));
         System.out.println(ClosestPairFromSortedArrays(list,list2,9));
         //System.out.println(maxContinuousSeriesOfOnes(list,1));
-        //System.out.println(threeSumClosest(list,-3));
+        //System.out.println(threeSumClosest(list,-3);
+
+    }
+
+    public ArrayList<Integer> scaredRishika(int A, int B, ArrayList<Integer> C) {
+        ArrayList<Integer> list = new ArrayList<>();
+        ArrayList<Integer> powers = new ArrayList<>();
+        int a=0,b=0;
+        while(Math.pow(A,a)<=Integer.MAX_VALUE&&Math.pow(B,b)<=Integer.MAX_VALUE){
+            if (Math.pow(A,a)<Math.pow(B,b)){
+                powers.add((int) Math.pow(A,a));
+                a++;
+            }
+            else powers.add((int) Math.pow(B,b));
+        }
+
+        return list;
     }
 
     public static ArrayList<Integer> maxContinuousSeriesOfOnes(ArrayList<Integer> A, int B) {

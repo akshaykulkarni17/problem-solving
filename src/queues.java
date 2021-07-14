@@ -8,7 +8,8 @@ public class queues {
         //System.out.println(slidingWindowMaximum(a,4));
         //System.out.println(SumOfMinAndMax(b,4));
         //System.out.println(PerfectNumbers(100000));
-        System.out.println(NIntegersContainingOnly123(29500));
+        //System.out.println(NIntegersContainingOnly123(29500));
+        System.out.println(FirstNonRepeatingCharacter("abcabc"));
     }
 
     public static ArrayList<Integer> NIntegersContainingOnly123(int A) {
@@ -161,17 +162,21 @@ public class queues {
         return max;
     }
 
-    public String FirstNonRepeatingCharacter(String A) {
-        Queue<Character> q = new LinkedList<>();
+    public static String FirstNonRepeatingCharacter(String A) {
+        Map<Character,Integer> freq = new HashMap<>();
         StringBuilder sb = new StringBuilder();
-        for (char c : A.toCharArray()){
-            if (q.isEmpty()){
-                q.add(c);
+        int loc = 0;
+        for (int i = 0; i < A.length(); i++) {
+            char c = A.charAt(i);
+            if (freq.containsKey(c)){
+                freq.put(c,freq.get(c)+1);
             }
-            else if(q.peek()==c){
-                q.poll();
+            else freq.put(c,1);
+            while (loc<=i&&freq.get(A.charAt(loc))!=1){
+                loc++;
             }
-            sb.append(q.peek());
+            if (loc==A.length()) sb.append('#');
+            else sb.append(A.charAt(loc));
         }
         return sb.toString();
     }

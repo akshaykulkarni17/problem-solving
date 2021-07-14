@@ -18,14 +18,15 @@ public class Stacks {
         //System.out.println(MaximumFrequencyStack(list));
         //System.out.println(redundantBraces("(a+(a+b))"));
         //System.out.println(AllSubArrays(a));
-        //System.out.println(Check2BracketExpressions("a-b-(c-d)","a-b-c-d"));
+        System.out.println(Check2BracketExpressions("-(a+((b-c)-(d+e)))","-(a+b-c-d-e)"));
         //-a-f+b-c-d+e
         //System.out.println(NearestSmallerElementOnLeft(a99));
         //System.out.println(largestRectangleAreaHistogram(a9));
         //System.out.println(maxAndMinSubArray(a8));
         list.add(a1);list.add(a2);list.add(a3);
         //System.out.println(MaximumRectangleBinaryMatrix(list));
-        System.out.println(infixToPostfix("q+(c*t)*o+(g*g)+q*(i-a)*p-(i*l)"));
+        //System.out.println(infixToPostfix("q+(c*t)*o+(g*g)+q*(i-a)*p-(i*l)"));
+
     }
 
     static int precedence (Character c){
@@ -308,6 +309,7 @@ public class Stacks {
         for (int i = 0; i < strA.length; i++) {
             if (strA[i]=='('&&i!=0) {
                 if (strA[i-1]=='-') negative.push(!negative.peek());
+                if (strA[i-1]=='(') negative.push(negative.peek());
             }
             else if (strA[i]-'a'>=0&&strA[i]-'a'<26){
                 char sign;
@@ -329,6 +331,7 @@ public class Stacks {
         for (int i = 0; i < strB.length; i++) {
             if (strB[i]=='('&&i!=0) {
                 if (strB[i-1]=='-') negative.push(!negative.peek());
+                if (strA[i-1]=='(') negative.push(negative.peek());
             }
             else if (strB[i]-'a'>=0&&strB[i]-'a'<26){
                 char sign;
@@ -389,23 +392,42 @@ public class Stacks {
 
     public static int redundantBraces(String A) {
         Stack<Character> stk = new Stack<>();
-        for (char c : A.toCharArray()){
-            if (stk.isEmpty()&&c=='('){
-                stk.push(c);
-            }
-            else {
-                if (c==')'&&stk.peek()=='(') return 1;
-                else if (c=='('||c=='+'||c=='-'||c=='*'||c=='/') stk.push(c);
-                else if (c==')'&&stk.peek()=='+'||stk.peek()=='-'||stk.peek()=='*'||stk.peek()=='/'){
-                    while (stk.peek()!='('){
-                        stk.pop();
+        Stack<Character> st = new Stack<>();
+        char[] str = A.toCharArray();
+        // Iterate through the given expression
+        for (char ch : str) {
+
+            // if current character is close parenthesis ')'
+            if (ch == ')') {
+                char top = st.peek();
+                st.pop();
+
+                // If immediate pop have open parenthesis '('
+                // duplicate brackets found
+                int flag = 1;
+
+                while (top != '(') {
+
+                    // Check for operators in expression
+                    if (top == '+' || top == '-'
+                            || top == '*' || top == '/') {
+                        flag = 0;
                     }
-                    stk.pop();
+
+                    // Fetch top element of stack
+                    top = st.peek();
+                    st.pop();
                 }
-            }
+
+                // If operators not found
+                if (flag == 1) {
+                    return 1;
+                }
+            } else {
+                st.push(ch); // push open parenthesis '(',
+            }                // operators and operands to stack
         }
-        if (stk.isEmpty()) return 0;
-        return 1;
+        return 0;
     }
 
 

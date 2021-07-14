@@ -14,8 +14,386 @@ import java.util.*;
       }
   }
 
-
 public class trees {
+
+    public static void main(String[] args) {
+        TreeNode A = new TreeNode(1);
+        A.left = new TreeNode(3);
+        A.right = new TreeNode(7);
+        A.left.left = new TreeNode(2);
+        A.left.right = new TreeNode(5);
+        A.right.left = new TreeNode(10);
+        A.right.right = new TreeNode(9);
+        A.left.right.left = new TreeNode(12);
+        A.right.left.right = new TreeNode(18);
+        //System.out.println(verticalOrderTraversal(A));
+        System.out.println(topViewOfTree(A));
+        //System.out.println(deserializeArray(new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, -1, -1, -1, -1, -1, -1))));
+        //System.out.println(boundaryTraversalOfBinaryTree(A));
+    }
+
+    Stack<Integer> stk;
+    public int EqualTreePartition(TreeNode A) {
+        stk=new Stack<>();
+        count(A);
+        int total = stk.pop();
+        while (!stk.isEmpty()){
+            int x = stk.pop();
+            if (x==total-x){
+                return 1;
+            }
+        }
+        return 0;
+    }
+    private int count(TreeNode a) {
+        if (a==null) return 0;
+        int leftSum = count(a.left);
+        int rightSum = count(a.right);
+        int curr = a.val + leftSum +rightSum;
+        stk.push(curr);
+        return curr;
+    }
+
+
+    public TreeNode flattenBinaryTreeToLinkedList(TreeNode a) {
+        flattenTree(a);
+        return a;
+    }
+    private void flattenTree(TreeNode a) {
+        if (a==null||(a.left==null&&a.right==null)) return;
+        if (a.left!=null){
+            flattenTree(a.left);
+            TreeNode temp = a.right;
+            a.right = a.left;
+            a.left = null;
+            TreeNode curr = a.right;
+            while (curr.right!=null){
+                curr=curr.right;
+            }
+            curr.right=temp;
+        }
+        flattenTree(a.right);
+    }
+
+
+    public ArrayList<Integer> mergeTwoBSTs(TreeNode A, TreeNode B) {
+        ArrayList<Integer> a =inorderTraversal(A);
+        ArrayList<Integer> b = inorderTraversal(B);
+        ArrayList<Integer> ans = new ArrayList<>();
+        int i=0,j=0;
+        while (i<a.size()&&j<b.size()){
+            if (a.get(i)<b.get(j)){
+                ans.add(a.get(i));
+                i++;
+            }
+            else{
+                ans.add(a.get(j));
+                j++;
+            }
+        }
+        while (i<a.size()){
+            ans.add(a.get(i));
+            i++;
+        }
+        while (j<b.size()){
+            ans.add(b.get(j));
+            j++;
+        }
+        return ans;
+    }
+
+
+
+
+
+    public int hasPathSum(TreeNode A, int B) {
+        return pathSum(A,B) ? 1:0;
+    }
+
+    private boolean pathSum(TreeNode a, int sum) {
+        if (a==null) return false;
+        if(a.left == null && a.right == null && sum - a.val == 0) return true;
+        return pathSum(a.left,sum-a.val) || pathSum(a.right,sum-a.val);
+    }
+
+
+    public TreeNode invertTree(TreeNode A) {
+        if (A==null) return null;
+        TreeNode temp = A.left;
+        A.left=A.right;
+        A.right=temp;
+        invertTree(A.left);
+        invertTree(A.right);
+        return A;
+    }
+
+
+
+
+    public boolean isLeaf(TreeNode A) {
+        if (A==null) return false;
+        if (A.left==null&&A.right==null) return true;
+        return false;
+    }
+    int isSumBinaryTree (TreeNode A){
+        int leftSum=0;
+        int rightSum=0;
+        if (A==null||isLeaf(A))  return 1;
+        if (isSumBinaryTree(A.left)!=0 && isSumBinaryTree(A.right)!=0){
+            if (A.left==null) leftSum=0;
+            else if (isLeaf(A.left)) leftSum=A.left.val;
+            else leftSum=2*A.left.val;
+
+            if (A.right==null) rightSum=0;
+            else if (isLeaf(A.right)) rightSum=A.right.val;
+            else rightSum=2*A.right.val;
+
+            if (A.val==leftSum+rightSum) return 1;
+            else return 0;
+        }
+        return 0;
+    }
+
+
+    public int lca(TreeNode A, int B, int C) {
+        TreeNode node= leastCommonAncestor(A,B,C);
+        return node.val;
+    }
+    public TreeNode leastCommonAncestor(TreeNode root, int v1, int v2) {
+        if (root==null||root.val==v1 || root.val==v2) return root;
+        TreeNode left = leastCommonAncestor(root.left,v1,v2);
+        TreeNode right = leastCommonAncestor(root.right,v1,v2);
+        if (left!=null && right!=null){
+            return root;
+        }
+        return left!=null ? left : right;
+    }
+
+
+
+
+
+    static ArrayList<Integer> boundary;
+    public static ArrayList<Integer> boundaryTraversalOfBinaryTree(TreeNode A) {
+        boundary=new ArrayList<>();
+        if (A==null) return boundary;
+        boundary.add(A.val);
+        printBoundaryLeft(A.left);
+        printLeaves(A.left);
+        printLeaves(A.right);
+        printBoundaryRight(A.right);
+        return boundary;
+    }
+
+    private static void printBoundaryRight(TreeNode root) {
+        if (root==null) return;
+        if (root.right!=null){
+            printBoundaryRight(root.right);
+            boundary.add(root.val);
+        }
+        else if (root.left!=null){
+            printBoundaryRight(root.left);
+            boundary.add(root.val);
+        }
+
+    }
+
+    private static void printLeaves(TreeNode root) {
+        if (root==null) return;
+        printLeaves(root.left);
+        if (root.left==null&&root.right==null){
+            boundary.add(root.val);
+        }
+        printLeaves(root.right);
+    }
+
+    private static void printBoundaryLeft(TreeNode root) {
+        if (root==null) return;
+        if (root.left!=null){
+            boundary.add(root.val);
+            printBoundaryLeft(root.left);
+        }
+        else if (root.right!=null){
+            boundary.add(root.val);
+            printBoundaryLeft(root.right);
+        }
+    }
+
+
+    public TreeNode sortedArrayToBST(final int[] A) {
+        return saToBst(A,0,A.length-1);
+    }
+    TreeNode saToBst(int[] a,int start, int end){
+        if (start>end) return null;
+        int mid = (start+end)/2;
+        TreeNode node = new TreeNode(a[mid]);
+        node.left = saToBst(a,start,mid-1);
+        node.right= saToBst(a,mid+1,end);
+        return node;
+
+    }
+
+
+
+
+
+    public int isValidBST(TreeNode A) {
+        return isBST(A,Integer.MIN_VALUE,Integer.MAX_VALUE) ? 1 : 0;
+    }
+
+    private boolean isBST(TreeNode a, int minValue, int maxValue) {
+        if (a==null) return true;
+        if (a.val<minValue||a.val>maxValue) return false;
+        return isBST(a.left,minValue,a.val) && isBST(a.right,a.val,maxValue);
+    }
+
+
+
+    public ArrayList<ArrayList<Integer>> zigzagLevelOrder(TreeNode A) {
+        ArrayList<ArrayList<Integer>> zigzag = new ArrayList<>();
+        travel(A,0,zigzag);
+        return zigzag;
+    }
+    private void travel(TreeNode curr, int level, ArrayList<ArrayList<Integer>> zigzag) {
+        if (curr==null) return;
+        if (zigzag.size()<=level){
+            ArrayList<Integer> newLevel = new ArrayList<>();
+            zigzag.add(newLevel);
+        }
+        ArrayList<Integer> collection = zigzag.get(level);
+        if (level%2==0) collection.add(curr.val);
+        else collection.add(0,curr.val);
+        travel(curr.left,level+1,zigzag);
+        travel(curr.right,level+1,zigzag);
+    }
+
+
+    public int minDepth(TreeNode A) {
+        if (A==null) return 0;
+        if (A.left==null&&A.right==null) return 1;
+        if (A.left==null) return minDepth(A.right)+1;
+        if (A.right==null) return minDepth(A.left)+1;
+        return Math.min(minDepth(A.left),minDepth(A.right))+1;
+    }
+
+
+    static int t;
+    public static TreeNode deserializeArray(ArrayList<Integer> A) {
+        t=0;
+        return deserializer(A);
+    }
+    static TreeNode deserializer(ArrayList<Integer> A){
+        if (A.get(t).equals(-1)) return null;
+        TreeNode root = new TreeNode(A.get(t));
+        t++;
+        root.left= deserializer(A);
+        t++;
+        root.right=deserializer(A);
+        return root;
+    }
+
+
+      static Map<Integer,TreeMap<Integer,PriorityQueue<Integer>>> hm ;
+      static int minX;
+      static int maxX;
+
+    public static ArrayList<Integer> topViewOfTree(TreeNode A) {
+        hm=new HashMap<>();
+        minX=0;
+        maxX=0;
+        helper(A,0,0);
+        ArrayList<Integer> top = new ArrayList<>();
+        for (int i = minX; i <= maxX; i++) {
+            int key = hm.get(i).lastKey();
+            top.add(hm.get(i).get(key).poll());
+        }
+        return top;
+    }
+
+
+    public static ArrayList<ArrayList<Integer>> verticalOrderTraversal(TreeNode A) {
+        hm=new HashMap<>();
+        minX=0;
+        maxX=0;
+        helper(A,0,0);
+        ArrayList<ArrayList<Integer>> verticalTraversal = new ArrayList<>();
+        for (int i = minX; i <=maxX ; i++) {
+            ArrayList<Integer> level = new ArrayList<>();
+            for (int key : hm.get(i).keySet()){
+                while (!hm.get(i).get(key).isEmpty()){
+                    level.add(hm.get(i).get(key).poll());
+                }
+            }
+            verticalTraversal.add(level);
+        }
+        return verticalTraversal;
+    }
+    private static void helper(TreeNode root, int x, int y) {
+        if (root==null) return;
+        minX=Math.min(minX,x);
+        maxX=Math.max(maxX,x);
+        if (hm.get(x)==null){
+            hm.put(x,new TreeMap<>());
+        }
+        if (hm.get(x).get(y)==null){
+            hm.get(x).put(y,new PriorityQueue<>(((a,b)->-1*a.compareTo(b))));
+        }
+        hm.get(x).get(y).add(root.val);
+        helper(root.left,x-1,y+1);
+        helper(root.right,x+1,y+1);
+    }
+
+
+    static  int ans;
+      public int diameterOfTree(TreeNode A){
+          if (A==null) return 0;
+          ans=Integer.MIN_VALUE;
+          heightOfNode(A);
+          return ans;
+      }
+
+    private int heightOfNode(TreeNode root) {
+          if (root==null) return 0;
+          int leftHeight = heightOfNode(root.left);
+          int rightHeight = heightOfNode(root.right);
+          ans=Math.max(ans,leftHeight+rightHeight);
+          return Math.max(rightHeight,leftHeight)+1;
+    }
+
+    public ArrayList<Integer> rightViewOfTree(TreeNode A) {
+        Queue<TreeNode> q = new LinkedList<>();
+        ArrayList<Integer> rightView = new ArrayList<>();
+        if (A==null) return rightView;
+        q.add(A);
+        while (!q.isEmpty()){
+            int size= q.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode temp=q.poll();
+                if (i==0) rightView.add(temp.val);
+                if (temp.right!=null) q.add(temp.right);
+                if (temp.left!=null) q.add(temp.left);
+            }
+        }
+        return rightView;
+    }
+
+
+    public ArrayList<Integer> leftViewOfTree(TreeNode A) {
+        Queue<TreeNode> q = new LinkedList<>();
+        ArrayList<Integer> leftView = new ArrayList<>();
+        if (A==null) return leftView;
+        q.add(A);
+        while (!q.isEmpty()){
+            int size= q.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode temp=q.poll();
+                if (i==0) leftView.add(temp.val);
+                if (temp.left!=null) q.add(temp.left);
+                if (temp.right!=null) q.add(temp.right);
+            }
+        }
+        return leftView;
+    }
 
     public ArrayList<ArrayList<Integer>> levelOrder(TreeNode A) {
         Queue<TreeNode> q = new LinkedList<>();
@@ -117,15 +495,7 @@ public class trees {
     }
 
 
-    public TreeNode invertTree(TreeNode A) {
-        if (A==null) return A;
-        TreeNode temp  = A.left;
-        A.left=A.right;
-        A.right=temp;
-        invertTree(A.left);
-        invertTree(A.right);
-        return A;
-    }
+
 
     public int isSameTree(TreeNode A, TreeNode B) {
         return isChildSame(A,B) ? 1 : 0;
