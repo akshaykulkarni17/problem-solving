@@ -2,8 +2,18 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
-
+class Employee{
+    int id;
+    String name;
+    double salary;
+    public Employee(int id, String name, double salary) {
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
+    }
+}
 class User {
 
     private final String name;
@@ -58,6 +68,13 @@ class User {
 
             int result8 = users.parallelStream().reduce(0, (partialAgeResult, user) -> partialAgeResult + user.getAge(), Integer::sum);
             System.out.println(result8);
+
+            Employee[] arrayOfEmps = {
+                    new Employee(1, "Jeff Bezos", 100000.0),
+                    new Employee(2, "Bill Gates", 200000.0),
+                    new Employee(3, "Mark Zuckerberg", 300000.0)
+            };
+            Stream.of(arrayOfEmps);
         }
     }
 }

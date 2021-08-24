@@ -1,7 +1,5 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.net.http.HttpRequest;
+import java.util.*;
 
 public class knapsackProblems {
 
@@ -11,14 +9,16 @@ public class knapsackProblems {
         //System.out.println(maxWeight(values,weights,50));
         ArrayList<Integer> list = new ArrayList<>(Arrays.asList(1,1,2,3));
         //System.out.println(subsetSum(list,28));
+        int[] arr = {1,2,3};
         //System.out.println(equalPartition(list));
         //System.out.println(countSubsetsTargetSum(list,10));
         //System.out.println(minSubsetSumDiff(list));
         //System.out.println(countSubsetSumDiff(list,1));
-        //System.out.println(longestCommonSubsequences("abbcdeef","bcd"));
+        System.out.println(longestCommonSubsequences("abbcdeef","bcd"));
         //System.out.println(longestCommonSubstring("abbcdeef","bcd"));
-        //System.out.println(printLongestCommonSubsequences("abbcdeef","bcde"));
-        System.out.println(shortestSuperSequence("abbcdeef","bcde"));
+        System.out.println(printLongestCommonSubsequences("abbcdeef","bcd"));
+        //System.out.println(shortestSuperSequence("abbcdeef","bcde"));
+        //System.out.println(permute(arr));
     }
     public static String shortestSuperSequence(String a, String b){
         {
@@ -262,4 +262,48 @@ public class knapsackProblems {
         }
         return ans[weights.size()][capacity];
     }
+
+    public int TusharsBirthdayParty(final List<Integer> A, final List<Integer> B, final List<Integer> C) {
+        int maxSum = Collections.max(A);  //maximum capacity
+        int[] dp = new int[maxSum+1];
+        Arrays.fill(dp,Integer.MAX_VALUE);
+        dp[0]=0;
+        for(int i=1;i<=maxSum;i++)  //check for each capacity
+            for(int j=0;j<C.size();j++){
+                if(i-B.get(j) >=0 ){
+                    dp[i] = Math.min(dp[i], C.get(j) + dp[i-B.get(j)]);
+                }
+            }
+        int ans = 0;
+        for (int x: A){
+            ans+=dp[x];
+        }
+        return ans;
+    }
+
+    static List<List<Integer>> list;
+    public static List<List<Integer>> permute(int[] nums) {
+        list=new ArrayList<>();
+        boolean[] v = new boolean[nums.length];
+        permute(nums,v,new ArrayList<>());
+        return list;
+
+    }
+    static void permute(int[] n, boolean[] v,List<Integer> a){
+        if(a.size()==n.length) {
+            list.add(new ArrayList<>(a));
+            return;
+        }
+        for(int i=0;i<n.length;i++){
+            if(!v[i]){
+                a.add(n[i]);
+                v[i]=true;
+                permute(n,v,a);
+                a.remove(a.size()-1);
+                v[i]=false;
+            }
+
+        }
+    }
+
 }

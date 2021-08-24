@@ -1,11 +1,11 @@
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class carestack {
 
     public static void main(String[] args) {
-        ArrayList<Integer> l = new ArrayList<>(Arrays.asList(1, 2, 1, 2, 2, 0, 0, 1, 0, 33, 10, 9));
-        System.out.println(uniqueNumbers(l));
+        List<Long> l = new ArrayList<Long>(Arrays.asList( 9L, 9L,3L, 3L, 5L));
+        //System.out.println(uniqueNumbers(l));
+        System.out.println(MaxSubArrayModM(l,7L));
     }
 
            static ArrayList<Integer> uniqueNumbers(ArrayList<Integer> list){
@@ -21,4 +21,41 @@ public class carestack {
                 }
                 return ans;
             }
+
+    static long minTime(long[] machines, long goal) {
+        long start=1;
+        long end= (goal*Arrays.stream(machines).max().getAsLong());
+        long ans=0;
+        while(start<=end){
+            long mid= start+(end-start)/2;
+            long tot=0L;
+            for (long x:machines){
+                tot+=mid/x;
+            }
+            if(tot>=goal){
+                ans=mid;
+                end=mid-1;
+            }
+            else start=mid+1;
+        }
+        return ans;
+    }
+
+    static long MaxSubArrayModM(List<Long> arr, long m){
+        TreeSet<Long> set = new TreeSet<>();
+        long prefix=0L;
+        long max=Long.MIN_VALUE;
+        set.add(0L);
+        for (long x: arr){
+            prefix=(prefix+x)%m;
+            max=Math.max(max,prefix);
+            long start=set.higher(prefix)!=null?set.higher(prefix):-1;
+            if (start!=-1){
+                max=Math.max(max,prefix-start+m);
+            }
+            set.add(prefix);
+        }
+        return max;
+    }
 }
+

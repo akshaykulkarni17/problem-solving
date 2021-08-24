@@ -14,6 +14,10 @@ class Car{
         this.profit = profit;
     }
 }
+class luck{
+    int bal;
+    boolean imp;
+}
 class children{
     int rating;
     int candy;
@@ -34,6 +38,27 @@ public class greedy {
         //System.out.println(anotherCoinProblem(147));
         //System.out.println(BinaryStrings("00010110",3));
         System.out.println(TheShipCompany(4,3,new ArrayList<>(Arrays.asList(2,1,1))));
+    }
+
+    public static int luckBalance(int k, List<List<Integer>> contests) {
+        ArrayList<luck> ll = new ArrayList<>();
+        for (List<Integer> con : contests){
+            luck temp = new luck();
+            temp.bal=con.get(0);
+            temp.imp= con.get(1) == 1;
+            ll.add(temp);
+        }
+        ll.sort(Comparator.comparing(a->a.bal));
+        int sum=0;
+        for (luck l : ll){
+            if (l.imp&&k>0) {
+                sum+=l.bal;
+                k--;
+            }
+            else if (!l.imp) sum+=l.bal;
+            else sum-=l.bal;
+        }
+        return sum;
     }
 
     public static ArrayList<Integer> TheShipCompany(int A, int B, ArrayList<Integer> C) {

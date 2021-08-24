@@ -250,6 +250,25 @@ public class linkedList {
         return 1;
     }
 
+    public int isPalindromeNoSpace(ListNode A) {
+        ListNode slow = A;
+        ListNode fast = A;
+        while (fast!=null&&fast.next!=null){
+            slow=slow.next;
+            fast=fast.next.next;
+        }
+        ListNode right=slow.next;
+        slow.next=null;
+        right=reverseList(right);
+        ListNode left =A;
+        while(right!=null){
+            if(left.val!=right.val) return 0;
+            left=left.next;
+            right=right.next;
+        }
+        return 1;
+    }
+
 
 
     public ListNode RemoveLoopFromLinkedList(ListNode A) {
